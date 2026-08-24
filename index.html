@@ -1,0 +1,813 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>関西カフェ営業リード管理</title>
+<style>
+  :root {
+    --paper: #f3f1ec;
+    --surface: #fbfaf7;
+    --surface-raised: #ffffff;
+    --ink: #262019;
+    --ink-soft: #6b6055;
+    --ink-faint: #a49a8c;
+    --line: #ddd6c9;
+    --line-soft: #e9e4d9;
+    --accent: #5b7047;
+    --accent-soft: #e6ebdd;
+    --accent-ink: #3f4f31;
+    --money: #8a5326;
+    --money-soft: #f3e6d8;
+    --danger: #a5433a;
+    --danger-soft: #f5e1de;
+    --shadow: 0 1px 2px rgba(38, 32, 25, 0.06), 0 4px 16px rgba(38, 32, 25, 0.05);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --paper: #19160f;
+      --surface: #221d15;
+      --surface-raised: #2a2419;
+      --ink: #ede6d8;
+      --ink-soft: #b3a794;
+      --ink-faint: #7d7361;
+      --line: #3a3325;
+      --line-soft: #2e2919;
+      --accent: #93b374;
+      --accent-soft: #2c3322;
+      --accent-ink: #c3dba9;
+      --money: #d99a5c;
+      --money-soft: #3a2c1a;
+      --danger: #d9877c;
+      --danger-soft: #3f2723;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --paper: #19160f;
+    --surface: #221d15;
+    --surface-raised: #2a2419;
+    --ink: #ede6d8;
+    --ink-soft: #b3a794;
+    --ink-faint: #7d7361;
+    --line: #3a3325;
+    --line-soft: #2e2919;
+    --accent: #93b374;
+    --accent-soft: #2c3322;
+    --accent-ink: #c3dba9;
+    --money: #d99a5c;
+    --money-soft: #3a2c1a;
+    --danger: #d9877c;
+    --danger-soft: #3f2723;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.25);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: "Yu Gothic", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 32px 20px 60px;
+  }
+
+  .page {
+    max-width: 1500px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+
+  h1 {
+    font-family: "Hiragino Mincho ProN", "Yu Mincho", serif;
+    font-size: clamp(22px, 3.4vw, 28px);
+    font-weight: 600;
+    margin: 2px 0 0;
+  }
+
+  .account-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    white-space: nowrap;
+  }
+  .account-box .email { font-weight: 600; color: var(--ink); }
+
+  .btn {
+    border: 1px solid var(--line);
+    background: var(--surface-raised);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
+  .btn.primary:hover { filter: brightness(1.06); color: var(--surface); }
+  .btn.small { padding: 5px 10px; font-size: 12px; }
+
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+  }
+
+  .toolbar select {
+    padding: 7px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-raised);
+    color: var(--ink);
+    font-size: 13px;
+  }
+
+  .toolbar .spacer { flex: 1; }
+
+  .toolbar .count {
+    font-size: 12px;
+    color: var(--ink-soft);
+  }
+
+  #import-summary {
+    font-size: 12px;
+    color: var(--accent-ink);
+    min-height: 16px;
+  }
+
+  .board {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(220px, 1fr));
+    gap: 12px;
+    overflow-x: auto;
+  }
+
+  .column {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    min-height: 200px;
+  }
+
+  .column-head {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .column-head .n {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    background: var(--line-soft);
+    border-radius: 999px;
+    padding: 1px 8px;
+  }
+
+  .column[data-status="成約"] .column-head { color: var(--accent-ink); }
+  .column[data-status="見送り"] .column-head { color: var(--ink-faint); }
+
+  .card-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 10px;
+    flex: 1;
+  }
+
+  .card {
+    background: var(--surface-raised);
+    border: 1px solid var(--line-soft);
+    border-radius: 10px;
+    padding: 10px 12px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .card:hover { border-color: var(--accent); }
+
+  .card .pref {
+    font-size: 10.5px;
+    color: var(--ink-faint);
+    letter-spacing: 0.02em;
+  }
+  .card .name {
+    font-size: 13.5px;
+    font-weight: 600;
+  }
+  .card .meta {
+    font-size: 11px;
+    color: var(--ink-soft);
+  }
+  .card .assignee {
+    font-size: 11px;
+    color: var(--accent-ink);
+    font-weight: 600;
+  }
+  .card .assignee.empty { color: var(--ink-faint); font-weight: 400; }
+  .card .new-badge {
+    display: inline-block;
+    font-size: 9.5px;
+    font-weight: 700;
+    color: var(--danger);
+    background: var(--danger-soft);
+    border-radius: 999px;
+    padding: 1px 7px;
+    margin-right: 6px;
+  }
+
+  .column-empty {
+    padding: 20px 10px;
+    text-align: center;
+    color: var(--ink-faint);
+    font-size: 12px;
+  }
+
+  #gate {
+    max-width: 420px;
+    margin: 120px auto;
+    text-align: center;
+    padding: 40px 30px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  #gate h1 { font-size: 20px; margin-bottom: 8px; }
+  #gate p { color: var(--ink-soft); font-size: 13px; margin-bottom: 20px; }
+  .error { font-size: 12px; color: var(--danger); min-height: 14px; margin-top: 16px; }
+
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(20, 16, 10, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    padding: 20px;
+  }
+
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    width: 100%;
+    max-width: 560px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 22px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .modal h2 { font-size: 17px; margin: 0; }
+  .modal .sub-line { font-size: 12px; color: var(--ink-soft); }
+  .modal .approach { font-size: 12.5px; color: var(--ink-soft); background: var(--paper); border-radius: 8px; padding: 10px 12px; }
+
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  .field label { font-size: 12px; color: var(--ink-soft); }
+  .field input, .field select, .field textarea {
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface-raised);
+    color: var(--ink);
+    font-size: 13.5px;
+    font-family: inherit;
+  }
+
+  .field-row { display: flex; gap: 12px; }
+  .field-row .field { flex: 1; }
+
+  .notes-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: 180px;
+    overflow-y: auto;
+    padding-right: 4px;
+  }
+  .note-item {
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 12.5px;
+  }
+  .note-item .note-meta { font-size: 10.5px; color: var(--ink-faint); margin-bottom: 3px; }
+
+  .modal-actions { display: flex; justify-content: space-between; gap: 10px; margin-top: 4px; }
+
+  a.source-link { color: var(--accent-ink); font-size: 12px; }
+
+  footer {
+    font-size: 12px;
+    color: var(--ink-faint);
+    text-align: center;
+    padding-top: 8px;
+  }
+
+  @media (max-width: 1100px) {
+    .board { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .board { grid-template-columns: repeat(2, minmax(200px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<div id="gate">
+  <h1>関西カフェ営業リード管理</h1>
+  <p>社内メンバーのみアクセスできます。Googleアカウントでサインインしてください。</p>
+  <button class="btn primary" id="signin-btn">Googleでサインイン</button>
+  <p class="error" id="gate-error"></p>
+</div>
+
+<div class="page" id="app" hidden>
+  <header>
+    <div>
+      <span class="eyebrow">KANSAI CAFE SALES LEADS</span>
+      <h1>関西カフェ営業リード管理</h1>
+    </div>
+    <div class="account-box">
+      <span class="email" id="account-email"></span>
+      <button class="btn small" id="signout-btn" type="button">サインアウト</button>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <button class="btn primary" id="import-btn" type="button">CSV取り込み</button>
+    <input type="file" id="csv-file" accept=".csv" hidden>
+    <select id="filter-pref"><option value="">都道府県: すべて</option></select>
+    <select id="filter-assignee"><option value="">担当者: すべて</option></select>
+    <span class="spacer"></span>
+    <span class="count" id="lead-count"></span>
+  </div>
+  <p id="import-summary"></p>
+
+  <div class="board" id="board"></div>
+
+  <footer>変更はチームで共有され、誰かが編集すると全員の画面に自動反映されます。</footer>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+  <div class="modal" id="modal"></div>
+</div>
+
+<!-- Firebase SDK (compat) -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+
+<script>
+  // ==================== Firebaseの設定(生豆原価台帳と同じプロジェクトを再利用) ====================
+  const firebaseConfig = {
+    apiKey: "AIzaSyCxi3PX1WXL8wjYDMFP863LjSWtyxg9jcU",
+    authDomain: "roast-cost.firebaseapp.com",
+    projectId: "roast-cost",
+    storageBucket: "roast-cost.firebasestorage.app",
+    messagingSenderId: "468771939307",
+    appId: "1:468771939307:web:460cccea2bb58e4b9d6fae"
+  };
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+  const leadsCol = db.collection("cafe_crm_leads");
+  let unsubscribeSnapshot = null;
+
+  const STATUSES = ["未着手", "リスト化済", "アプローチ済", "商談中", "成約", "見送り"];
+
+  let leads = [];              // Firestoreから同期された全リード { id, ...fields }
+  let currentUserEmail = "";
+  let filterPref = "";
+  let filterAssignee = "";
+  let modalLeadId = null;
+
+  // ==================== CSVパース ====================
+  // ダブルクオート囲み・カンマ区切り・""エスケープに対応した簡易CSVパーサー
+  function parseCsv(text) {
+    const rows = [];
+    let row = [];
+    let field = "";
+    let inQuotes = false;
+    // 先頭のBOMを除去
+    if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"') {
+          if (text[i + 1] === '"') { field += '"'; i++; }
+          else { inQuotes = false; }
+        } else {
+          field += c;
+        }
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ",") { row.push(field); field = ""; }
+        else if (c === "\n") { row.push(field); rows.push(row); row = []; field = ""; }
+        else if (c === "\r") { /* skip, \n が改行を処理する */ }
+        else field += c;
+      }
+    }
+    if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row); }
+    return rows.filter(r => r.length > 1 || (r.length === 1 && r[0] !== ""));
+  }
+
+  function csvRowsToLeadDrafts(rows) {
+    if (rows.length < 2) return [];
+    const header = rows[0];
+    const idx = (name) => header.indexOf(name);
+    const iPref = idx("都道府県"), iName = idx("店名"), iCategory = idx("業態"),
+      iProposal = idx("提案タイプ"), iAddress = idx("所在地"), iOpen = idx("オープン予定"),
+      iSource = idx("情報源"), iDetected = idx("検出日");
+    const drafts = [];
+    for (let r = 1; r < rows.length; r++) {
+      const row = rows[r];
+      if (!row || row.every(v => v === "")) continue;
+      const name = (row[iName] || "").trim();
+      if (!name) continue;
+      drafts.push({
+        pref: (row[iPref] || "").trim(),
+        name,
+        category: (row[iCategory] || "").trim(),
+        proposalType: (row[iProposal] || "").trim(),
+        address: (row[iAddress] || "").trim(),
+        openDate: (row[iOpen] || "").trim(),
+        source: (row[iSource] || "").trim(),
+        detectedAt: (row[iDetected] || "").trim()
+      });
+    }
+    return drafts;
+  }
+
+  function dedupeKey(name, address) {
+    return (name || "").trim() + "|" + (address || "").trim();
+  }
+
+  // ==================== CSV取り込み ====================
+  document.getElementById("import-btn").addEventListener("click", () => {
+    document.getElementById("csv-file").click();
+  });
+
+  document.getElementById("csv-file").addEventListener("change", (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const rows = parseCsv(reader.result);
+      const drafts = csvRowsToLeadDrafts(rows);
+      const existingKeys = new Set(leads.map(l => dedupeKey(l.name, l.address)));
+      const newOnes = drafts.filter(d => !existingKeys.has(dedupeKey(d.name, d.address)));
+
+      const summaryEl = document.getElementById("import-summary");
+      if (newOnes.length === 0) {
+        summaryEl.textContent = `新規リードはありませんでした(CSV内 ${drafts.length}件、すべて登録済み)。`;
+        e.target.value = "";
+        return;
+      }
+      summaryEl.textContent = "取り込み中...";
+      const batch = db.batch();
+      const now = new Date().toISOString();
+      newOnes.forEach(d => {
+        const ref = leadsCol.doc();
+        batch.set(ref, Object.assign({}, d, {
+          status: "未着手",
+          assignee: "",
+          nextActionDate: "",
+          notes: [],
+          createdAt: now,
+          updatedAt: now
+        }));
+      });
+      try {
+        await batch.commit();
+        summaryEl.textContent = `${newOnes.length}件を新規追加しました(CSV内 ${drafts.length}件、${drafts.length - newOnes.length}件は登録済みのためスキップ)。`;
+      } catch (err) {
+        summaryEl.textContent = "取り込みに失敗しました: " + err.message;
+      }
+      e.target.value = "";
+    };
+    reader.readAsText(file, "utf-8");
+  });
+
+  // ==================== フィルタ ====================
+  document.getElementById("filter-pref").addEventListener("change", (e) => {
+    filterPref = e.target.value;
+    renderBoard();
+  });
+  document.getElementById("filter-assignee").addEventListener("change", (e) => {
+    filterAssignee = e.target.value;
+    renderBoard();
+  });
+
+  function renderFilterOptions() {
+    const prefSel = document.getElementById("filter-pref");
+    const assigneeSel = document.getElementById("filter-assignee");
+    const prefs = Array.from(new Set(leads.map(l => l.pref).filter(Boolean))).sort();
+    const assignees = Array.from(new Set(leads.map(l => l.assignee).filter(Boolean))).sort();
+
+    const keepPref = prefSel.value;
+    prefSel.innerHTML = '<option value="">都道府県: すべて</option>' +
+      prefs.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(p)}</option>`).join("");
+    prefSel.value = prefs.includes(keepPref) ? keepPref : "";
+    filterPref = prefSel.value;
+
+    const keepAssignee = assigneeSel.value;
+    assigneeSel.innerHTML = '<option value="">担当者: すべて</option>' +
+      assignees.map(a => `<option value="${escapeHtml(a)}">${escapeHtml(a)}</option>`).join("");
+    assigneeSel.value = assignees.includes(keepAssignee) ? keepAssignee : "";
+    filterAssignee = assigneeSel.value;
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    }[c]));
+  }
+
+  function isRecent(detectedAt) {
+    if (!detectedAt) return false;
+    const d = new Date(detectedAt);
+    if (isNaN(d.getTime())) return false;
+    return (Date.now() - d.getTime()) < 7 * 24 * 60 * 60 * 1000;
+  }
+
+  // ==================== カンバン描画 ====================
+  function renderBoard() {
+    const board = document.getElementById("board");
+    board.innerHTML = "";
+
+    const filtered = leads.filter(l => {
+      if (filterPref && l.pref !== filterPref) return false;
+      if (filterAssignee && l.assignee !== filterAssignee) return false;
+      return true;
+    });
+
+    document.getElementById("lead-count").textContent = `全${leads.length}件中 ${filtered.length}件を表示`;
+
+    STATUSES.forEach(status => {
+      const col = document.createElement("div");
+      col.className = "column";
+      col.dataset.status = status;
+
+      const items = filtered.filter(l => (l.status || "未着手") === status);
+
+      const head = document.createElement("div");
+      head.className = "column-head";
+      head.innerHTML = `<span>${escapeHtml(status)}</span><span class="n">${items.length}</span>`;
+      col.appendChild(head);
+
+      const list = document.createElement("div");
+      list.className = "card-list";
+
+      if (items.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "column-empty";
+        empty.textContent = "リードなし";
+        list.appendChild(empty);
+      } else {
+        items.forEach(l => list.appendChild(renderCard(l)));
+      }
+
+      col.appendChild(list);
+      board.appendChild(col);
+    });
+  }
+
+  function renderCard(l) {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.addEventListener("click", () => openModal(l.id));
+    const assigneeHtml = l.assignee
+      ? `<span class="assignee">担当: ${escapeHtml(l.assignee)}</span>`
+      : `<span class="assignee empty">未割当</span>`;
+    card.innerHTML = `
+      <div class="pref">${isRecent(l.detectedAt) ? '<span class="new-badge">NEW</span>' : ""}${escapeHtml(l.pref)} / ${escapeHtml(l.category)}</div>
+      <div class="name">${escapeHtml(l.name)}</div>
+      <div class="meta">${escapeHtml(l.address)}</div>
+      <div class="meta">オープン予定: ${escapeHtml(l.openDate || "-")}</div>
+      ${assigneeHtml}
+    `;
+    return card;
+  }
+
+  // ==================== 詳細モーダル ====================
+  function openModal(leadId) {
+    modalLeadId = leadId;
+    renderModal();
+    document.getElementById("modal-backdrop").hidden = false;
+  }
+
+  function closeModal() {
+    modalLeadId = null;
+    document.getElementById("modal-backdrop").hidden = true;
+  }
+
+  document.getElementById("modal-backdrop").addEventListener("click", (e) => {
+    if (e.target.id === "modal-backdrop") closeModal();
+  });
+
+  function renderModal() {
+    const l = leads.find(x => x.id === modalLeadId);
+    const modal = document.getElementById("modal");
+    if (!l) { closeModal(); return; }
+
+    const notesHtml = (l.notes || []).slice().reverse().map(n => `
+      <div class="note-item">
+        <div class="note-meta">${escapeHtml(n.date || "")} ${escapeHtml(n.author || "")}</div>
+        <div>${escapeHtml(n.text || "")}</div>
+      </div>
+    `).join("") || '<div class="note-item" style="color:var(--ink-faint);">まだメモはありません。</div>';
+
+    modal.innerHTML = `
+      <h2>${escapeHtml(l.name)}</h2>
+      <div class="sub-line">${escapeHtml(l.pref)} ${escapeHtml(l.address)} ／ ${escapeHtml(l.category)}(${escapeHtml(l.proposalType || "")})</div>
+      <div class="sub-line">オープン予定: ${escapeHtml(l.openDate || "-")} ／ 検出日: ${escapeHtml(l.detectedAt || "-")}</div>
+      ${l.source ? `<a class="source-link" href="${escapeHtml(l.source)}" target="_blank" rel="noopener">情報源を見る ↗</a>` : ""}
+
+      <div class="field-row">
+        <div class="field">
+          <label>ステータス</label>
+          <select id="m-status">
+            ${STATUSES.map(s => `<option value="${s}" ${s === (l.status || "未着手") ? "selected" : ""}>${s}</option>`).join("")}
+          </select>
+        </div>
+        <div class="field">
+          <label>担当者</label>
+          <input type="text" id="m-assignee" list="assignee-list" value="${escapeHtml(l.assignee || "")}" placeholder="例: 山田">
+        </div>
+      </div>
+
+      <div class="field">
+        <label>次回アクション予定日</label>
+        <input type="date" id="m-next-action" value="${escapeHtml(l.nextActionDate || "")}">
+      </div>
+
+      <div class="field">
+        <label>対応メモを追加</label>
+        <textarea id="m-note" rows="2" placeholder="例: 電話でアポ確認。来週再訪予定。"></textarea>
+      </div>
+
+      <div class="field">
+        <label>対応履歴</label>
+        <div class="notes-list">${notesHtml}</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn" id="m-close" type="button">閉じる</button>
+        <button class="btn primary" id="m-save" type="button">保存</button>
+      </div>
+    `;
+
+    document.getElementById("m-close").addEventListener("click", closeModal);
+    document.getElementById("m-save").addEventListener("click", saveModal);
+  }
+
+  async function saveModal() {
+    const l = leads.find(x => x.id === modalLeadId);
+    if (!l) return;
+    const status = document.getElementById("m-status").value;
+    const assignee = document.getElementById("m-assignee").value.trim();
+    const nextActionDate = document.getElementById("m-next-action").value;
+    const noteText = document.getElementById("m-note").value.trim();
+
+    const update = {
+      status,
+      assignee,
+      nextActionDate,
+      updatedAt: new Date().toISOString()
+    };
+
+    if (noteText) {
+      const newNote = {
+        date: new Date().toISOString().slice(0, 10),
+        author: currentUserEmail,
+        text: noteText
+      };
+      update.notes = (l.notes || []).concat([newNote]);
+    }
+
+    try {
+      await leadsCol.doc(l.id).update(update);
+      closeModal();
+    } catch (err) {
+      alert("保存に失敗しました: " + err.message);
+    }
+  }
+
+  // ==================== 担当者オートコンプリート用 ====================
+  function renderAssigneeDatalist() {
+    let dl = document.getElementById("assignee-list");
+    if (!dl) {
+      dl = document.createElement("datalist");
+      dl.id = "assignee-list";
+      document.body.appendChild(dl);
+    }
+    const assignees = Array.from(new Set(leads.map(l => l.assignee).filter(Boolean))).sort();
+    dl.innerHTML = assignees.map(a => `<option value="${escapeHtml(a)}">`).join("");
+  }
+
+  function renderAll() {
+    renderFilterOptions();
+    renderAssigneeDatalist();
+    renderBoard();
+    if (modalLeadId) renderModal();
+  }
+
+  function subscribeToLeads() {
+    if (unsubscribeSnapshot) unsubscribeSnapshot();
+    unsubscribeSnapshot = leadsCol.onSnapshot(snap => {
+      leads = snap.docs.map(d => Object.assign({ id: d.id }, d.data()));
+      renderAll();
+    }, err => {
+      document.getElementById("import-summary").textContent = "リアルタイム同期でエラーが発生しました: " + err.message;
+    });
+  }
+
+  // ==================== 認証(Googleサインイン) ====================
+  const gateEl = document.getElementById("gate");
+  const appEl = document.getElementById("app");
+  const gateErrorEl = document.getElementById("gate-error");
+
+  document.getElementById("signin-btn").addEventListener("click", () => {
+    gateErrorEl.textContent = "";
+    const provider = new firebase.auth.GoogleAuthProvider();
+    auth.signInWithPopup(provider).catch(err => {
+      gateErrorEl.textContent = "サインインに失敗しました: " + err.message;
+    });
+  });
+
+  document.getElementById("signout-btn").addEventListener("click", () => {
+    if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+    auth.signOut();
+  });
+
+  auth.onAuthStateChanged(user => {
+    if (!user) {
+      gateEl.hidden = false;
+      appEl.hidden = true;
+      if (unsubscribeSnapshot) { unsubscribeSnapshot(); unsubscribeSnapshot = null; }
+      return;
+    }
+    currentUserEmail = user.email;
+    document.getElementById("account-email").textContent = user.email;
+
+    // 許可リストに入っているか確認するため、まず1件読み取りを試みる
+    leadsCol.limit(1).get().then(() => {
+      gateEl.hidden = true;
+      appEl.hidden = false;
+      subscribeToLeads();
+    }).catch(err => {
+      if (err.code === "permission-denied") {
+        gateErrorEl.textContent = "このアカウント(" + user.email + ")にはアクセス権がありません。管理者に許可リストへの追加を依頼してください。";
+        auth.signOut();
+      } else {
+        gateErrorEl.textContent = "接続できませんでした: " + err.message;
+      }
+    });
+  });
+</script>
+</body>
+</html>
