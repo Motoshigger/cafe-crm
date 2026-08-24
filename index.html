@@ -378,7 +378,6 @@
 
   <div class="toolbar">
     <button class="btn primary" id="import-btn" type="button">CSV取り込み</button>
-    <input type="file" id="csv-file" accept=".csv" hidden>
     <select id="filter-pref"><option value="">都道府県: すべて</option></select>
     <select id="filter-assignee"><option value="">担当者: すべて</option></select>
     <span class="spacer"></span>
@@ -486,51 +485,71 @@
     return (name || "").trim() + "|" + (address || "").trim();
   }
 
-  // ==================== CSV取り込み ====================
-  document.getElementById("import-btn").addEventListener("click", () => {
-    document.getElementById("csv-file").click();
-  });
+  // ==================== CSV取り込み(貼り付け方式。OSのファイル選択ダイアログに依存しない) ====================
+  document.getElementById("import-btn").addEventListener("click", openImportModal);
 
-  document.getElementById("csv-file").addEventListener("change", (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = async () => {
-      const rows = parseCsv(reader.result);
-      const drafts = csvRowsToLeadDrafts(rows);
-      const existingKeys = new Set(leads.map(l => dedupeKey(l.name, l.address)));
-      const newOnes = drafts.filter(d => !existingKeys.has(dedupeKey(d.name, d.address)));
+  function openImportModal() {
+    const modal = document.getElementById("modal");
+    modal.innerHTML = `
+      <h2>CSV取り込み</h2>
+      <p class="sub-line">cafe_list.csv をメモ帳やExcelで開いて全選択・コピーし、下の欄に貼り付けてください（1行目の見出し行も含めてOKです）。</p>
+      <div class="field">
+        <label>CSVの中身を貼り付け</label>
+        <textarea id="import-textarea" rows="10" placeholder="No,都道府県,店名,業態,..."></textarea>
+      </div>
+      <p id="import-summary"></p>
+      <div class="modal-actions">
+        <button class="btn" id="import-cancel" type="button">閉じる</button>
+        <button class="btn primary" id="import-run" type="button">取り込む</button>
+      </div>
+    `;
+    document.getElementById("modal-backdrop").hidden = false;
+    document.getElementById("import-cancel").addEventListener("click", closeModal);
+    document.getElementById("import-run").addEventListener("click", runImport);
+  }
 
-      const summaryEl = document.getElementById("import-summary");
-      if (newOnes.length === 0) {
-        summaryEl.textContent = `新規リードはありませんでした(CSV内 ${drafts.length}件、すべて登録済み)。`;
-        e.target.value = "";
-        return;
-      }
-      summaryEl.textContent = "取り込み中...";
-      const batch = db.batch();
-      const now = new Date().toISOString();
-      newOnes.forEach(d => {
-        const ref = leadsCol.doc();
-        batch.set(ref, Object.assign({}, d, {
-          status: "未着手",
-          assignee: "",
-          nextActionDate: "",
-          notes: [],
-          createdAt: now,
-          updatedAt: now
-        }));
-      });
-      try {
-        await batch.commit();
-        summaryEl.textContent = `${newOnes.length}件を新規追加しました(CSV内 ${drafts.length}件、${drafts.length - newOnes.length}件は登録済みのためスキップ)。`;
-      } catch (err) {
-        summaryEl.textContent = "取り込みに失敗しました: " + err.message;
-      }
-      e.target.value = "";
-    };
-    reader.readAsText(file, "utf-8");
-  });
+  async function runImport() {
+    const text = document.getElementById("import-textarea").value;
+    const summaryEl = document.getElementById("import-summary");
+    if (!text.trim()) {
+      summaryEl.textContent = "CSVの中身が入力されていません。";
+      return;
+    }
+    const rows = parseCsv(text);
+    const drafts = csvRowsToLeadDrafts(rows);
+    if (drafts.length === 0) {
+      summaryEl.textContent = "有効な行が見つかりませんでした。見出し行(No,都道府県,店名...)が含まれているか確認してください。";
+      return;
+    }
+    const existingKeys = new Set(leads.map(l => dedupeKey(l.name, l.address)));
+    const newOnes = drafts.filter(d => !existingKeys.has(dedupeKey(d.name, d.address)));
+
+    if (newOnes.length === 0) {
+      summaryEl.textContent = `新規リードはありませんでした(CSV内 ${drafts.length}件、すべて登録済み)。`;
+      return;
+    }
+    summaryEl.textContent = "取り込み中...";
+    const batch = db.batch();
+    const now = new Date().toISOString();
+    newOnes.forEach(d => {
+      const ref = leadsCol.doc();
+      batch.set(ref, Object.assign({}, d, {
+        status: "未着手",
+        assignee: "",
+        nextActionDate: "",
+        notes: [],
+        createdAt: now,
+        updatedAt: now
+      }));
+    });
+    try {
+      await batch.commit();
+      summaryEl.textContent = `${newOnes.length}件を新規追加しました(CSV内 ${drafts.length}件、${drafts.length - newOnes.length}件は登録済みのためスキップ)。2秒後に閉じます。`;
+      setTimeout(closeModal, 2000);
+    } catch (err) {
+      summaryEl.textContent = "取り込みに失敗しました: " + err.message;
+    }
+  }
 
   // ==================== フィルタ ====================
   document.getElementById("filter-pref").addEventListener("change", (e) => {
