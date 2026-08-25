@@ -504,6 +504,7 @@
   <div class="toolbar">
     <button class="btn primary" id="import-btn" type="button">CSV取り込み</button>
     <button class="btn" id="manual-add-btn" type="button">＋ 新規客先を登録</button>
+    <button class="btn" id="backfill-btn" type="button">未割当を自動割り当て</button>
     <select id="filter-pref"><option value="">都道府県: すべて</option></select>
     <select id="filter-assignee"><option value="">担当者: すべて</option></select>
     <span class="spacer"></span>
@@ -683,6 +684,30 @@
     if (PREF_SHINGO.includes(pref)) return "新郷";
     if (PREF_OHARA.includes(pref)) return "小原";
     return "";
+  }
+
+  // ==================== 未割当リードへの一括自動割り当て(既存データの穴埋め用) ====================
+  document.getElementById("backfill-btn").addEventListener("click", runBackfillAssignees);
+
+  async function runBackfillAssignees() {
+    const summaryEl = document.getElementById("import-summary");
+    const targets = leads.filter(l => !l.assignee && autoAssign(l.pref, l.address));
+    if (targets.length === 0) {
+      summaryEl.textContent = "担当者が未割当のリードはありませんでした。";
+      return;
+    }
+    summaryEl.textContent = "割り当て中...";
+    const batch = db.batch();
+    const now = new Date().toISOString();
+    targets.forEach(l => {
+      batch.update(leadsCol.doc(l.id), { assignee: autoAssign(l.pref, l.address), updatedAt: now });
+    });
+    try {
+      await batch.commit();
+      summaryEl.textContent = `${targets.length}件のリードに担当者を割り当てました。`;
+    } catch (err) {
+      summaryEl.textContent = "割り当てに失敗しました: " + err.message;
+    }
   }
 
   // ==================== CSV取り込み(貼り付け方式。OSのファイル選択ダイアログに依存しない) ====================
