@@ -21,6 +21,8 @@
     --money-soft: #f3e6d8;
     --danger: #a5433a;
     --danger-soft: #f5e1de;
+    --warn: #9a7b1f;
+    --warn-soft: #f2ecd6;
     --shadow: 0 1px 2px rgba(38, 32, 25, 0.06), 0 4px 16px rgba(38, 32, 25, 0.05);
   }
 
@@ -41,6 +43,8 @@
       --money-soft: #3a2c1a;
       --danger: #d9877c;
       --danger-soft: #3f2723;
+      --warn: #d9c25c;
+      --warn-soft: #362e18;
       --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.25);
     }
   }
@@ -61,6 +65,8 @@
     --money-soft: #3a2c1a;
     --danger: #d9877c;
     --danger-soft: #3f2723;
+    --warn: #d9c25c;
+    --warn-soft: #362e18;
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 20px rgba(0, 0, 0, 0.25);
   }
 
@@ -72,7 +78,7 @@
     font-family: "Yu Gothic", "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif;
     line-height: 1.6;
     margin: 0;
-    padding: 32px 20px 60px;
+    padding: 24px 20px 60px;
   }
 
   .page {
@@ -118,6 +124,20 @@
   }
   .account-box .email { font-weight: 600; color: var(--ink); }
 
+  #gate {
+    max-width: 420px;
+    margin: 120px auto;
+    text-align: center;
+    padding: 40px 30px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+  #gate h1 { font-size: 20px; margin-bottom: 8px; }
+  #gate p { color: var(--ink-soft); font-size: 13px; margin-bottom: 20px; }
+  .error { font-size: 12px; color: var(--danger); min-height: 14px; margin-top: 16px; }
+
   .btn {
     border: 1px solid var(--line);
     background: var(--surface-raised);
@@ -131,9 +151,78 @@
     gap: 6px;
   }
   .btn:hover { border-color: var(--accent); color: var(--accent-ink); }
+  .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
   .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); font-weight: 600; }
   .btn.primary:hover { filter: brightness(1.06); color: var(--surface); }
   .btn.small { padding: 5px 10px; font-size: 12px; }
+
+  .intro-note {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    background: var(--accent-soft);
+    color: var(--accent-ink);
+    border: 1px solid var(--accent);
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 12.5px;
+    line-height: 1.7;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .intro-row {
+    display: flex;
+    align-items: baseline;
+  }
+  .intro-label {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    font-weight: 700;
+    margin-right: 2px;
+  }
+  .intro-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .status-legend {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 16px;
+    box-shadow: var(--shadow);
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 9px 28px;
+  }
+  .status-legend-item {
+    display: grid;
+    grid-template-columns: 128px 32px 1fr;
+    align-items: baseline;
+    gap: 8px;
+    font-size: 12px;
+  }
+  .status-legend-item .status-pill {
+    font-size: 10.5px;
+    padding: 2px 9px;
+    width: fit-content;
+  }
+  .status-legend-item .desc {
+    color: var(--ink-soft);
+  }
+  .status-legend-item .legend-count {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+  @media (max-width: 720px) {
+    .status-legend { grid-template-columns: 1fr; }
+  }
 
   .toolbar {
     display: flex;
@@ -161,121 +250,130 @@
   .toolbar .count {
     font-size: 12px;
     color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
   }
 
   #import-summary {
+    max-width: 1500px;
+    margin: 0 auto;
     font-size: 12px;
     color: var(--accent-ink);
     min-height: 16px;
   }
 
-  .board {
-    display: grid;
-    grid-template-columns: repeat(6, minmax(220px, 1fr));
-    gap: 12px;
-    overflow-x: auto;
-  }
-
-  .column {
+  .table-wrap {
+    max-width: 1500px;
+    margin: 0 auto;
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: 12px;
-    display: flex;
-    flex-direction: column;
-    min-height: 200px;
+    box-shadow: var(--shadow);
+    overflow-x: auto;
   }
-
-  .column-head {
-    padding: 10px 12px;
+  .lead-table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .lead-table thead th {
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-soft);
+    letter-spacing: 0.03em;
+    padding: 12px 16px;
     border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  .lead-table tbody td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    vertical-align: top;
     font-size: 13px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
   }
-  .column-head .n {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--ink-soft);
-    background: var(--line-soft);
-    border-radius: 999px;
-    padding: 1px 8px;
-  }
-
-  .column[data-status="成約"] .column-head { color: var(--accent-ink); }
-  .column[data-status="見送り"] .column-head { color: var(--ink-faint); }
-
-  .card-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding: 10px;
-    flex: 1;
-  }
-
-  .card {
-    background: var(--surface-raised);
-    border: 1px solid var(--line-soft);
-    border-radius: 10px;
-    padding: 10px 12px;
+  .lead-table tbody tr:last-child td { border-bottom: none; }
+  .lead-table tbody tr {
     cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
   }
-  .card:hover { border-color: var(--accent); }
-
-  .card .pref {
-    font-size: 10.5px;
-    color: var(--ink-faint);
-    letter-spacing: 0.02em;
-  }
-  .card .name {
-    font-size: 13.5px;
-    font-weight: 600;
-  }
-  .card .meta {
-    font-size: 11px;
-    color: var(--ink-soft);
-  }
-  .card .assignee {
-    font-size: 11px;
-    color: var(--accent-ink);
-    font-weight: 600;
-  }
-  .card .assignee.empty { color: var(--ink-faint); font-weight: 400; }
-  .card .new-badge {
-    display: inline-block;
+  .lead-table tbody tr:hover td { background: var(--paper); }
+  .lead-table .new-badge {
+    display: block;
     font-size: 9.5px;
     font-weight: 700;
+    letter-spacing: 0.03em;
     color: var(--danger);
     background: var(--danger-soft);
     border-radius: 999px;
     padding: 1px 7px;
-    margin-right: 6px;
+    width: fit-content;
+    margin-bottom: 3px;
   }
-
-  .column-empty {
-    padding: 20px 10px;
+  .lead-table .client-name {
+    font-weight: 600;
+    display: block;
+    color: var(--ink);
+    text-decoration: none;
+    width: fit-content;
+  }
+  .lead-table .client-name:hover {
+    color: var(--accent-ink);
+    text-decoration: underline;
+  }
+  .lead-table .client-name:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 1px;
+  }
+  .lead-table .client-address {
+    display: block;
+    font-size: 11.5px;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .lead-table .open-date {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+  .lead-table .updated-at {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+    color: var(--ink-soft);
+  }
+  .status-pill {
+    display: inline-block;
+    font-size: 11.5px;
+    font-weight: 600;
+    padding: 3px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .status-pill[data-status="未着手"] { background: var(--line-soft); color: var(--ink-soft); }
+  .status-pill[data-status="アプローチ済み"] { background: var(--warn-soft); color: var(--warn); }
+  .status-pill[data-status="反応あり"] { background: var(--money-soft); color: var(--money); }
+  .status-pill[data-status="焙煎豆DM発送"] { background: var(--money-soft); color: var(--money); }
+  .status-pill[data-status="商談中"] { background: var(--accent-soft); color: var(--accent-ink); }
+  .status-pill[data-status="成約"] { background: var(--accent); color: var(--surface); }
+  .status-pill[data-status="見送り"] { background: var(--line-soft); color: var(--ink-faint); }
+  .status-pill[data-status="営業対象外"] { background: var(--danger-soft); color: var(--danger); }
+  .review-badge {
+    display: block;
+    width: fit-content;
+    margin-top: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--warn);
+    background: var(--warn-soft);
+    border: 1px solid var(--warn);
+    border-radius: 999px;
+    padding: 1px 8px;
+  }
+  .lead-table tbody tr.needs-review td:first-child {
+    box-shadow: inset 3px 0 0 var(--warn);
+  }
+  .table-empty {
+    padding: 32px;
     text-align: center;
     color: var(--ink-faint);
-    font-size: 12px;
+    font-size: 13px;
   }
-
-  #gate {
-    max-width: 420px;
-    margin: 120px auto;
-    text-align: center;
-    padding: 40px 30px;
-    background: var(--surface);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    box-shadow: var(--shadow);
-  }
-  #gate h1 { font-size: 20px; margin-bottom: 8px; }
-  #gate p { color: var(--ink-soft); font-size: 13px; margin-bottom: 20px; }
-  .error { font-size: 12px; color: var(--danger); min-height: 14px; margin-top: 16px; }
 
   .modal-backdrop {
     position: fixed;
@@ -307,7 +405,14 @@
 
   .modal h2 { font-size: 17px; margin: 0; }
   .modal .sub-line { font-size: 12px; color: var(--ink-soft); }
-  .modal .approach { font-size: 12.5px; color: var(--ink-soft); background: var(--paper); border-radius: 8px; padding: 10px 12px; }
+  .modal .approach {
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    background: var(--paper);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+  .modal .approach strong { color: var(--ink); }
 
   .field { display: flex; flex-direction: column; gap: 5px; }
   .field label { font-size: 12px; color: var(--ink-soft); }
@@ -319,6 +424,10 @@
     color: var(--ink);
     font-size: 13.5px;
     font-family: inherit;
+  }
+  #tpl-text {
+    resize: vertical;
+    line-height: 1.7;
   }
 
   .field-row { display: flex; gap: 12px; }
@@ -345,17 +454,12 @@
   a.source-link { color: var(--accent-ink); font-size: 12px; }
 
   footer {
+    max-width: 1500px;
+    margin: 0 auto;
     font-size: 12px;
     color: var(--ink-faint);
     text-align: center;
     padding-top: 8px;
-  }
-
-  @media (max-width: 1100px) {
-    .board { grid-template-columns: repeat(3, minmax(220px, 1fr)); }
-  }
-  @media (max-width: 640px) {
-    .board { grid-template-columns: repeat(2, minmax(200px, 1fr)); }
   }
 </style>
 </head>
@@ -380,16 +484,49 @@
     </div>
   </header>
 
+  <div class="intro-note">
+    <div class="intro-row">
+      <span class="intro-label">本システムについて：</span>
+      <span class="intro-text">毎週月曜日にWEB上から検索した開店情報や準備情報、求人広告等から弊社の見込み客先を収集します。エリアごとに担当が自動で割り振られるので、各担当は客先の情報を確認し、アプローチを行うか対象外にするかを検討してください。</span>
+    </div>
+    <div class="intro-row">
+      <span class="intro-label">新規客入力について：</span>
+      <span class="intro-text">自分で見つけてきた営業先については「＋新規客先を登録」から情報を入力してください。</span>
+    </div>
+    <div class="intro-row">
+      <span class="intro-label">サンプル送付に関して：</span>
+      <span class="intro-text">オープンしていない先がもっとも優先度が高いため、即座に焙煎豆DMを発送してOKです。開店済みの店舗は他の方法でアプローチを行い、反応があった先のみDMを送るようにしてください。サンプル送付時は藤村さんに送り先の住所を明確にして依頼を行うこと！</span>
+    </div>
+  </div>
+
+  <div class="status-legend" id="status-legend"></div>
+
   <div class="toolbar">
     <button class="btn primary" id="import-btn" type="button">CSV取り込み</button>
+    <button class="btn" id="manual-add-btn" type="button">＋ 新規客先を登録</button>
     <select id="filter-pref"><option value="">都道府県: すべて</option></select>
     <select id="filter-assignee"><option value="">担当者: すべて</option></select>
     <span class="spacer"></span>
     <span class="count" id="lead-count"></span>
+    <button class="btn" id="template-btn" type="button">テンプレの選択</button>
   </div>
   <p id="import-summary"></p>
 
-  <div class="board" id="board"></div>
+  <div class="table-wrap">
+    <table class="lead-table">
+      <thead>
+        <tr>
+          <th>客先名</th>
+          <th>オープン予定日</th>
+          <th>担当者</th>
+          <th>ステータス</th>
+          <th>最終更新日</th>
+        </tr>
+      </thead>
+      <tbody id="lead-table-body"></tbody>
+    </table>
+    <div class="table-empty" id="table-empty" hidden>該当するリードがありません。</div>
+  </div>
 
   <footer>変更はチームで共有され、誰かが編集すると全員の画面に自動反映されます。</footer>
 </div>
@@ -420,7 +557,38 @@
   const leadsCol = db.collection("cafe_crm_leads");
   let unsubscribeSnapshot = null;
 
-  const STATUSES = ["未着手", "リスト化済", "アプローチ済", "商談中", "成約", "見送り"];
+  const STATUSES = ["未着手", "アプローチ済み", "反応あり", "焙煎豆DM発送", "商談中", "成約", "見送り", "営業対象外"];
+  const STATUS_DESCRIPTIONS = {
+    "未着手": "新規抽出されたが、まだ何もしていない",
+    "アプローチ済み": "DM/メール/電話/訪問での案内を行った",
+    "反応あり": "問い合わせ・サンプル希望など何らかの反応あり",
+    "焙煎豆DM発送": "豆サンプルを送付",
+    "商談中": "電話・訪問・見積など具体的な営業段階",
+    "成約": "採用・取引開始",
+    "見送り": "アプローチしたが、反応なし/提案したが不採用",
+    "営業対象外": "規模感や業態から提案を行わない"
+  };
+
+  // 未着手・アプローチ済み・反応あり・焙煎豆DM発送で一定期間動きがない場合、見直しを促す
+  // (商談中・成約・見送り・営業対象外は既に進行中/決着済みのため対象外)
+  const REVIEW_EXCLUDED_STATUSES = ["商談中", "成約", "見送り", "営業対象外"];
+  const REVIEW_DUE_DAYS = 14;
+
+  function needsReview(l) {
+    if (REVIEW_EXCLUDED_STATUSES.includes(l.status)) return false;
+    const refDate = l.updatedAt || l.createdAt || l.detectedAt;
+    if (!refDate) return false;
+    const updated = new Date(refDate);
+    if (isNaN(updated.getTime())) return false;
+    return (Date.now() - updated.getTime()) > REVIEW_DUE_DAYS * 24 * 60 * 60 * 1000;
+  }
+
+  function isRecent(detectedAt) {
+    if (!detectedAt) return false;
+    const d = new Date(detectedAt);
+    if (isNaN(d.getTime())) return false;
+    return (Date.now() - d.getTime()) < 7 * 24 * 60 * 60 * 1000;
+  }
 
   let leads = [];              // Firestoreから同期された全リード { id, ...fields }
   let currentUserEmail = "";
@@ -464,7 +632,7 @@
     const idx = (name) => header.indexOf(name);
     const iPref = idx("都道府県"), iName = idx("店名"), iCategory = idx("業態"),
       iProposal = idx("提案タイプ"), iAddress = idx("所在地"), iOpen = idx("オープン予定"),
-      iSource = idx("情報源"), iDetected = idx("検出日");
+      iApproach = idx("営業アプローチのポイント"), iSource = idx("情報源"), iDetected = idx("検出日");
     const drafts = [];
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
@@ -478,6 +646,7 @@
         proposalType: (row[iProposal] || "").trim(),
         address: (row[iAddress] || "").trim(),
         openDate: (row[iOpen] || "").trim(),
+        approach: (row[iApproach] || "").trim(),
         source: (row[iSource] || "").trim(),
         detectedAt: (row[iDetected] || "").trim()
       });
@@ -487,6 +656,33 @@
 
   function dedupeKey(name, address) {
     return (name || "").trim() + "|" + (address || "").trim();
+  }
+
+  // ==================== 住所からの担当者自動割り当て(既存顧客の実績データを元にしたルール) ====================
+  // 大阪市内: 淀川区・東淀川区・西淀川区(北摂に隣接)は新郷、それ以外の区は小原
+  const OSAKA_CITY_SHINGO_WARDS = ["淀川区", "東淀川区", "西淀川区"];
+  // 大阪府: 吹田市・摂津市は西埜部長、北摂・京阪の他エリアは新郷、東大阪市・南部エリアは小原
+  const OSAKA_NISHINOBE_CITIES = ["吹田市", "摂津市"];
+  const OSAKA_SHINGO_CITIES = ["豊中市", "池田市", "箕面市", "茨木市", "高槻市", "島本町", "守口市", "枚方市", "寝屋川市", "四條畷市", "交野市", "門真市", "大東市"];
+  const OSAKA_OHARA_CITIES = ["東大阪市", "堺市", "高石市", "泉大津市", "和泉市", "岸和田市", "貝塚市", "泉佐野市", "泉南市", "阪南市", "大阪狭山市", "富田林市", "河内長野市", "羽曳野市", "藤井寺市", "松原市", "八尾市", "太子町", "河南町", "千早赤阪村", "田尻町", "熊取町", "岬町"];
+  // 大阪府以外(関西5府県)
+  const PREF_SHINGO = ["京都府", "兵庫県", "奈良県", "和歌山県"];
+  const PREF_OHARA = ["滋賀県"];
+
+  function autoAssign(pref, address) {
+    const addr = address || "";
+    if (pref === "大阪府") {
+      if (addr.includes("大阪市")) {
+        return OSAKA_CITY_SHINGO_WARDS.some(w => addr.includes(w)) ? "新郷" : "小原";
+      }
+      if (OSAKA_NISHINOBE_CITIES.some(c => addr.includes(c))) return "西埜部長";
+      if (OSAKA_SHINGO_CITIES.some(c => addr.includes(c))) return "新郷";
+      if (OSAKA_OHARA_CITIES.some(c => addr.includes(c))) return "小原";
+      return "";
+    }
+    if (PREF_SHINGO.includes(pref)) return "新郷";
+    if (PREF_OHARA.includes(pref)) return "小原";
+    return "";
   }
 
   // ==================== CSV取り込み(貼り付け方式。OSのファイル選択ダイアログに依存しない) ====================
@@ -501,7 +697,7 @@
         <label>CSVの中身を貼り付け</label>
         <textarea id="import-textarea" rows="10" placeholder="No,都道府県,店名,業態,..."></textarea>
       </div>
-      <p id="import-summary"></p>
+      <p id="import-modal-summary" style="font-size:12px; color:var(--accent-ink); min-height:16px;"></p>
       <div class="modal-actions">
         <button class="btn" id="import-cancel" type="button">閉じる</button>
         <button class="btn primary" id="import-run" type="button">取り込む</button>
@@ -514,7 +710,7 @@
 
   async function runImport() {
     const text = document.getElementById("import-textarea").value;
-    const summaryEl = document.getElementById("import-summary");
+    const summaryEl = document.getElementById("import-modal-summary");
     if (!text.trim()) {
       summaryEl.textContent = "CSVの中身が入力されていません。";
       return;
@@ -539,7 +735,7 @@
       const ref = leadsCol.doc();
       batch.set(ref, Object.assign({}, d, {
         status: "未着手",
-        assignee: "",
+        assignee: autoAssign(d.pref, d.address),
         nextActionDate: "",
         notes: [],
         createdAt: now,
@@ -555,15 +751,233 @@
     }
   }
 
+  // ==================== 新規客先を手動登録 ====================
+  document.getElementById("manual-add-btn").addEventListener("click", openManualAddModal);
+
+  const KANSAI_PREFS = ["大阪府", "京都府", "兵庫県", "奈良県", "滋賀県", "和歌山県"];
+
+  function openManualAddModal() {
+    const modal = document.getElementById("modal");
+    modal.innerHTML = `
+      <h2>新規客先を登録</h2>
+      <p class="sub-line">従業員が自分で見つけてきた候補先を、この場でリストに追加できます。</p>
+      <div class="field-row">
+        <div class="field">
+          <label>都道府県</label>
+          <select id="ma-pref">${KANSAI_PREFS.map(p => `<option value="${p}">${p}</option>`).join("")}</select>
+        </div>
+        <div class="field">
+          <label>業態</label>
+          <input type="text" id="ma-category" placeholder="例: カフェ">
+        </div>
+      </div>
+      <div class="field">
+        <label>店名 <span style="color:var(--danger);">*必須</span></label>
+        <input type="text" id="ma-name" placeholder="例: ○○珈琲店">
+      </div>
+      <div class="field">
+        <label>所在地</label>
+        <input type="text" id="ma-address" placeholder="例: 大阪市北区〇〇1-1-1">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>オープン予定</label>
+          <input type="text" id="ma-opendate" placeholder="空欄なら開店済み扱い">
+        </div>
+        <div class="field">
+          <label>あなたの名前 <span style="color:var(--danger);">*必須</span></label>
+          <input type="text" id="ma-assignee" list="assignee-list" placeholder="例: 新郷">
+        </div>
+      </div>
+      <p class="sub-line" style="margin-top:-8px;">この客先の担当者は、住所に関わらず登録したあなたになります。</p>
+      <div class="field">
+        <label>進捗情報</label>
+        <textarea id="ma-approach" rows="2" placeholder="例: 知人経営で話が通しやすい。〇月〇日に電話で紹介予定"></textarea>
+      </div>
+      <p id="manual-add-summary" style="font-size:12px; color:var(--accent-ink); min-height:16px;"></p>
+      <div class="modal-actions">
+        <button class="btn" id="manual-add-cancel" type="button">閉じる</button>
+        <button class="btn primary" id="manual-add-run" type="button">登録する</button>
+      </div>
+    `;
+    document.getElementById("modal-backdrop").hidden = false;
+    document.getElementById("manual-add-cancel").addEventListener("click", closeModal);
+    document.getElementById("manual-add-run").addEventListener("click", runManualAdd);
+  }
+
+  async function runManualAdd() {
+    const summaryEl = document.getElementById("manual-add-summary");
+    const pref = document.getElementById("ma-pref").value;
+    const name = document.getElementById("ma-name").value.trim();
+    const category = document.getElementById("ma-category").value.trim();
+    const address = document.getElementById("ma-address").value.trim();
+    const openDate = document.getElementById("ma-opendate").value.trim();
+    const approach = document.getElementById("ma-approach").value.trim();
+    const assigneeInput = document.getElementById("ma-assignee").value.trim();
+
+    if (!name) {
+      summaryEl.textContent = "店名を入力してください。";
+      return;
+    }
+    if (!assigneeInput) {
+      summaryEl.textContent = "あなたの名前を入力してください。";
+      return;
+    }
+    const key = dedupeKey(name, address);
+    if (leads.some(l => dedupeKey(l.name, l.address) === key)) {
+      summaryEl.textContent = "同じ店名・住所のリードが既に登録されています。";
+      return;
+    }
+
+    const now = new Date().toISOString();
+    try {
+      await leadsCol.add({
+        pref, name, category, proposalType: "焙煎豆(完成品)", address, openDate,
+        approach, source: "", detectedAt: now.slice(0, 10),
+        status: "未着手",
+        assignee: assigneeInput,
+        nextActionDate: "", notes: [], createdAt: now, updatedAt: now
+      });
+      summaryEl.textContent = `「${name}」を登録しました。2秒後に閉じます。`;
+      setTimeout(closeModal, 2000);
+    } catch (err) {
+      summaryEl.textContent = "登録に失敗しました: " + err.message;
+    }
+  }
+
+  // ==================== 営業アプローチテンプレ ====================
+  const CONTACT_TEMPLATES = {
+    "西埜部長": {
+      label: "西埜部長",
+      text: `お世話になっております。
+コーヒー豆の卸・焙煎を行っております、アラブ珈琲の西埜と申します。
+
+貴店の新規オープン（またはお取り扱いコーヒー豆の情報）を拝見し、ご挨拶を兼ねてご連絡させていただきました。
+
+弊社では、
+・小ロットでのオリジナルブレンド
+・店舗様のコンセプトに合わせた味づくり
+・ドリップパックOEM
+などに対応しており、これから店舗を始められる方から、既に営業されている店舗様まで幅広くご提案させていただいております。
+
+もし現在、
+「取引先の豆を探している／見直したい」
+「価格を見直したい」
+「味の方向性に合う豆を探している」
+といったご検討がございましたら、ぜひ一度お話しさせてください。
+
+ご興味をお持ちいただけましたら、サンプル豆とカタログを無料でお送りすることも可能です。ご希望の場合はご返信いただけますと幸いです。
+
+何卒よろしくお願いいたします。
+
+アラブ珈琲株式会社
+西埜元成
+TEL：06-6370-2325
+Mail：motoshige.nishino@arab-coffee.co.jp`
+    },
+    "新郷": {
+      label: "新郷聡士",
+      text: `お世話になっております。
+コーヒー豆の卸・焙煎を行っております、アラブ珈琲の新郷と申します。
+
+貴店の新規オープン（またはお取り扱いコーヒー豆の情報）を拝見し、ご挨拶を兼ねてご連絡させていただきました。
+
+弊社では、
+・小ロットでのオリジナルブレンド
+・店舗様のコンセプトに合わせた味づくり
+・ドリップパックOEM
+などに対応しており、これから店舗を始められる方から、既に営業されている店舗様まで幅広くご提案させていただいております。
+
+もし現在、
+「取引先の豆を探している／見直したい」
+「価格を見直したい」
+「味の方向性に合う豆を探している」
+といったご検討がございましたら、ぜひ一度お話しさせてください。
+
+ご興味をお持ちいただけましたら、サンプル豆とカタログを無料でお送りすることも可能です。ご希望の場合はご返信いただけますと幸いです。
+
+何卒よろしくお願いいたします。
+
+アラブ珈琲株式会社
+新郷聡士
+TEL：06-6370-2325
+Mail：satoshi.shingou@arab-coffee.co.jp`
+    },
+    "小原": {
+      label: "小原嘉丈",
+      text: `お世話になっております。
+コーヒー豆の卸・焙煎を行っております、アラブ珈琲の小原と申します。
+
+貴店の新規オープン（またはお取り扱いコーヒー豆の情報）を拝見し、ご挨拶を兼ねてご連絡させていただきました。
+
+弊社では、
+・小ロットでのオリジナルブレンド
+・店舗様のコンセプトに合わせた味づくり
+・ドリップパックOEM
+などに対応しており、これから店舗を始められる方から、既に営業されている店舗様まで幅広くご提案させていただいております。
+
+もし現在、
+「取引先の豆を探している／見直したい」
+「価格を見直したい」
+「味の方向性に合う豆を探している」
+といったご検討がございましたら、ぜひ一度お話しさせてください。
+
+ご興味をお持ちいただけましたら、サンプル豆とカタログを無料でお送りすることも可能です。ご希望の場合はご返信いただけますと幸いです。
+
+何卒よろしくお願いいたします。
+
+アラブ珈琲株式会社
+小原嘉丈
+TEL：06-6370-2325
+Mail：yoshitake.ohara@arab-coffee.co.jp`
+    }
+  };
+
+  document.getElementById("template-btn").addEventListener("click", openTemplateModal);
+
+  function openTemplateModal() {
+    const keys = Object.keys(CONTACT_TEMPLATES);
+    const modal = document.getElementById("modal");
+    modal.innerHTML = `
+      <h2>営業アプローチテンプレ</h2>
+      <p class="sub-line">担当者を選ぶと、そのままコピーできるメール文面が表示されます。</p>
+      <div class="field">
+        <label>担当者</label>
+        <select id="tpl-select">${keys.map(k => `<option value="${escapeHtml(k)}">${escapeHtml(CONTACT_TEMPLATES[k].label)}</option>`).join("")}</select>
+      </div>
+      <div class="field">
+        <label>本文</label>
+        <textarea id="tpl-text" rows="16" readonly></textarea>
+      </div>
+      <p id="tpl-copy-status" style="font-size:12px; color:var(--accent-ink); min-height:16px;"></p>
+      <div class="modal-actions">
+        <button class="btn" id="tpl-close" type="button">閉じる</button>
+        <button class="btn primary" id="tpl-copy" type="button">コピー</button>
+      </div>
+    `;
+    document.getElementById("modal-backdrop").hidden = false;
+    const selectEl = document.getElementById("tpl-select");
+    const textEl = document.getElementById("tpl-text");
+    const fillText = () => { textEl.value = CONTACT_TEMPLATES[selectEl.value].text; };
+    fillText();
+    selectEl.addEventListener("change", fillText);
+    document.getElementById("tpl-close").addEventListener("click", closeModal);
+    document.getElementById("tpl-copy").addEventListener("click", async () => {
+      const statusEl = document.getElementById("tpl-copy-status");
+      try {
+        await navigator.clipboard.writeText(textEl.value);
+        statusEl.textContent = "コピーしました。";
+      } catch (err) {
+        textEl.select();
+        document.execCommand("copy");
+        statusEl.textContent = "コピーしました。";
+      }
+    });
+  }
+
   // ==================== フィルタ ====================
-  document.getElementById("filter-pref").addEventListener("change", (e) => {
-    filterPref = e.target.value;
-    renderBoard();
-  });
-  document.getElementById("filter-assignee").addEventListener("change", (e) => {
-    filterAssignee = e.target.value;
-    renderBoard();
-  });
+  document.getElementById("filter-pref").addEventListener("change", (e) => { filterPref = e.target.value; renderTable(); });
+  document.getElementById("filter-assignee").addEventListener("change", (e) => { filterAssignee = e.target.value; renderTable(); });
 
   function renderFilterOptions() {
     const prefSel = document.getElementById("filter-pref");
@@ -590,70 +1004,59 @@
     }[c]));
   }
 
-  function isRecent(detectedAt) {
-    if (!detectedAt) return false;
-    const d = new Date(detectedAt);
-    if (isNaN(d.getTime())) return false;
-    return (Date.now() - d.getTime()) < 7 * 24 * 60 * 60 * 1000;
+  function formatDate(iso) {
+    if (!iso) return "-";
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "-";
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${d.getFullYear()}/${pad(d.getMonth() + 1)}/${pad(d.getDate())}`;
   }
 
-  // ==================== カンバン描画 ====================
-  function renderBoard() {
-    const board = document.getElementById("board");
-    board.innerHTML = "";
-
-    const filtered = leads.filter(l => {
+  function getFilteredLeads() {
+    return leads.filter(l => {
       if (filterPref && l.pref !== filterPref) return false;
       if (filterAssignee && l.assignee !== filterAssignee) return false;
       return true;
     });
-
-    document.getElementById("lead-count").textContent = `全${leads.length}件中 ${filtered.length}件を表示`;
-
-    STATUSES.forEach(status => {
-      const col = document.createElement("div");
-      col.className = "column";
-      col.dataset.status = status;
-
-      const items = filtered.filter(l => (l.status || "未着手") === status);
-
-      const head = document.createElement("div");
-      head.className = "column-head";
-      head.innerHTML = `<span>${escapeHtml(status)}</span><span class="n">${items.length}</span>`;
-      col.appendChild(head);
-
-      const list = document.createElement("div");
-      list.className = "card-list";
-
-      if (items.length === 0) {
-        const empty = document.createElement("div");
-        empty.className = "column-empty";
-        empty.textContent = "リードなし";
-        list.appendChild(empty);
-      } else {
-        items.forEach(l => list.appendChild(renderCard(l)));
-      }
-
-      col.appendChild(list);
-      board.appendChild(col);
-    });
   }
 
-  function renderCard(l) {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.addEventListener("click", () => openModal(l.id));
-    const assigneeHtml = l.assignee
-      ? `<span class="assignee">担当: ${escapeHtml(l.assignee)}</span>`
-      : `<span class="assignee empty">未割当</span>`;
-    card.innerHTML = `
-      <div class="pref">${isRecent(l.detectedAt) ? '<span class="new-badge">NEW</span>' : ""}${escapeHtml(l.pref)} / ${escapeHtml(l.category)}</div>
-      <div class="name">${escapeHtml(l.name)}</div>
-      <div class="meta">${escapeHtml(l.address)}</div>
-      <div class="meta">オープン予定: ${escapeHtml(l.openDate || "-")}</div>
-      ${assigneeHtml}
-    `;
-    return card;
+  // ==================== 表描画 ====================
+  function renderTable() {
+    const filtered = getFilteredLeads();
+    document.getElementById("lead-count").textContent = `全${leads.length}件中 ${filtered.length}件を表示`;
+    const body = document.getElementById("lead-table-body");
+    const emptyEl = document.getElementById("table-empty");
+    body.innerHTML = "";
+
+    if (filtered.length === 0) {
+      emptyEl.hidden = false;
+      return;
+    }
+    emptyEl.hidden = true;
+
+    filtered.forEach(l => {
+      const tr = document.createElement("tr");
+      tr.addEventListener("click", () => openModal(l.id));
+      const status = l.status || "未着手";
+      const searchUrl = "https://www.google.com/search?q=" + encodeURIComponent(l.name + " " + l.address);
+      tr.innerHTML = `
+        <td>
+          ${isRecent(l.detectedAt) ? '<span class="new-badge">NEW!</span>' : ""}
+          <a class="client-name" href="${searchUrl}" target="_blank" rel="noopener" title="店名で検索する">${escapeHtml(l.name)}</a>
+          <span class="client-address">${escapeHtml(l.address)}</span>
+        </td>
+        <td class="open-date">${escapeHtml(l.openDate || "-")}</td>
+        <td>${l.assignee ? escapeHtml(l.assignee) : '<span style="color:var(--ink-faint);">未割当</span>'}</td>
+        <td>
+          <span class="status-pill" data-status="${escapeHtml(status)}">${escapeHtml(status)}</span>
+          ${needsReview(l) ? `<span class="review-badge" title="${REVIEW_DUE_DAYS}日以上このステータスのまま更新がありません">状況更新を確認</span>` : ""}
+        </td>
+        <td class="updated-at">${formatDate(l.updatedAt)}</td>
+      `;
+      if (needsReview(l)) tr.classList.add("needs-review");
+      tr.querySelector(".client-name").addEventListener("click", (e) => e.stopPropagation());
+      body.appendChild(tr);
+    });
   }
 
   // ==================== 詳細モーダル ====================
@@ -689,6 +1092,7 @@
       <div class="sub-line">${escapeHtml(l.pref)} ${escapeHtml(l.address)} ／ ${escapeHtml(l.category)}(${escapeHtml(l.proposalType || "")})</div>
       <div class="sub-line">オープン予定: ${escapeHtml(l.openDate || "-")} ／ 検出日: ${escapeHtml(l.detectedAt || "-")}</div>
       ${l.source ? `<a class="source-link" href="${escapeHtml(l.source)}" target="_blank" rel="noopener">情報源を見る ↗</a>` : ""}
+      ${l.approach ? `<div class="approach"><strong>${l.source ? "営業アプローチのポイント" : "進捗情報"}：</strong>${escapeHtml(l.approach)}</div>` : ""}
 
       <div class="field-row">
         <div class="field">
@@ -699,7 +1103,7 @@
         </div>
         <div class="field">
           <label>担当者</label>
-          <input type="text" id="m-assignee" list="assignee-list" value="${escapeHtml(l.assignee || "")}" placeholder="例: 山田">
+          <input type="text" id="m-assignee" list="assignee-list" value="${escapeHtml(l.assignee || "")}" placeholder="例: 新郷">
         </div>
       </div>
 
@@ -772,10 +1176,25 @@
     dl.innerHTML = assignees.map(a => `<option value="${escapeHtml(a)}">`).join("");
   }
 
+  function renderStatusLegend() {
+    const el = document.getElementById("status-legend");
+    el.innerHTML = STATUSES.map(s => {
+      const count = leads.filter(l => (l.status || "未着手") === s).length;
+      return `
+      <div class="status-legend-item">
+        <span class="status-pill" data-status="${escapeHtml(s)}">${escapeHtml(s)}</span>
+        <span class="legend-count">${count}件</span>
+        <span class="desc">${escapeHtml(STATUS_DESCRIPTIONS[s] || "")}</span>
+      </div>
+    `;
+    }).join("");
+  }
+
   function renderAll() {
     renderFilterOptions();
     renderAssigneeDatalist();
-    renderBoard();
+    renderStatusLegend();
+    renderTable();
     if (modalLeadId) renderModal();
   }
 
